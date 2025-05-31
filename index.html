@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile Project Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>AgileFlow</h2>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-view="dashboard">Dashboard</button>
+                <button class="nav-tab" data-view="kanban">Kanban Board</button>
+                <button class="nav-tab" data-view="sprint">Sprint Planning</button>
+                <button class="nav-tab" data-view="backlog">Backlog</button>
+                <button class="nav-tab" data-view="reports">Reports</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Current Project</h4>
+                <div class="project-info">
+                    <span class="project-name">E-Commerce Platform</span>
+                    <span class="project-status status status--success">Active</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h4>Quick Actions</h4>
+                <div class="quick-actions">
+                    <button class="btn btn--sm btn--outline" id="addTaskBtn">Add Task</button>
+                    <button class="btn btn--sm btn--outline" id="addStoryBtn">Add Story</button>
+                    <button class="btn btn--sm btn--primary" id="startSprintBtn">Start Sprint</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Team Members</h4>
+                <div class="team-list" id="teamList"></div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboardView">
+                <div class="view-header">
+                    <h1>Dashboard</h1>
+                    <p>Sprint overview and key metrics</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Sprint Overview -->
+                    <div class="card sprint-overview">
+                        <div class="card__header">
+                            <h3>Current Sprint</h3>
+                            <span class="status status--info" id="sprintStatus">Active</span>
+                        </div>
+                        <div class="card__body">
+                            <h4 id="sprintName">Sprint 3: User Authentication & Security</h4>
+                            <p id="sprintGoal">Complete user authentication system and basic security features</p>
+                            <div class="sprint-dates">
+                                <span>May 20 - June 3, 2025</span>
+                            </div>
+                            <div class="sprint-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="sprintProgress" style="width: 60%"></div>
+                                </div>
+                                <span class="progress-text">15/32 Story Points</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card card">
+                            <div class="card__body">
+                                <h4>Velocity</h4>
+                                <div class="metric-value">25.7</div>
+                                <div class="metric-trend">↑ 8% from last sprint</div>
+                            </div>
+                        </div>
+                        <div class="metric-card card">
+                            <div class="card__body">
+                                <h4>Team Capacity</h4>
+                                <div class="metric-value">40h</div>
+                                <div class="metric-trend">32h committed</div>
+                            </div>
+                        </div>
+                        <div class="metric-card card">
+                            <div class="card__body">
+                                <h4>Completed Tasks</h4>
+                                <div class="metric-value">8</div>
+                                <div class="metric-trend">2 remaining</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card recent-activity">
+                        <div class="card__header">
+                            <h3>Recent Activity</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="activity-list" id="activityList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sprint Chart -->
+                    <div class="card sprint-chart">
+                        <div class="card__header">
+                            <h3>Sprint Burndown</h3>
+                        </div>
+                        <div class="card__body">
+                            <canvas id="burndownChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Board View -->
+            <div class="view" id="kanbanView">
+                <div class="view-header">
+                    <h1>Kanban Board</h1>
+                    <div class="view-controls">
+                        <select class="form-control" id="assigneeFilter">
+                            <option value="">All Assignees</option>
+                        </select>
+                        <select class="form-control" id="priorityFilter">
+                            <option value="">All Priorities</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="kanban-board">
+                    <div class="kanban-column" data-status="To Do">
+                        <div class="column-header">
+                            <h3>To Do</h3>
+                            <span class="task-count" id="todoCount">0</span>
+                        </div>
+                        <div class="column-content" id="todoColumn"></div>
+                        <button class="btn btn--sm btn--outline add-task-btn" data-status="To Do">+ Add Task</button>
+                    </div>
+                    <div class="kanban-column" data-status="In Progress">
+                        <div class="column-header">
+                            <h3>In Progress</h3>
+                            <span class="task-count" id="inProgressCount">0</span>
+                        </div>
+                        <div class="column-content" id="inProgressColumn"></div>
+                        <button class="btn btn--sm btn--outline add-task-btn" data-status="In Progress">+ Add Task</button>
+                    </div>
+                    <div class="kanban-column" data-status="Done">
+                        <div class="column-header">
+                            <h3>Done</h3>
+                            <span class="task-count" id="doneCount">0</span>
+                        </div>
+                        <div class="column-content" id="doneColumn"></div>
+                        <button class="btn btn--sm btn--outline add-task-btn" data-status="Done">+ Add Task</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sprint Planning View -->
+            <div class="view" id="sprintView">
+                <div class="view-header">
+                    <h1>Sprint Planning</h1>
+                    <button class="btn btn--primary" id="editSprintBtn">Edit Sprint</button>
+                </div>
+
+                <div class="sprint-planning-grid">
+                    <div class="card sprint-info">
+                        <div class="card__header">
+                            <h3>Sprint Information</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="sprint-details" id="sprintDetails"></div>
+                        </div>
+                    </div>
+
+                    <div class="card sprint-backlog">
+                        <div class="card__header">
+                            <h3>Sprint Backlog</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="backlog-list" id="sprintBacklogList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backlog View -->
+            <div class="view" id="backlogView">
+                <div class="view-header">
+                    <h1>Product Backlog</h1>
+                    <button class="btn btn--primary" id="addStoryBtnMain">Add User Story</button>
+                </div>
+
+                <div class="backlog-container">
+                    <div class="backlog-list" id="backlogList"></div>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div class="view" id="reportsView">
+                <div class="view-header">
+                    <h1>Reports & Analytics</h1>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Velocity Chart</h3>
+                        </div>
+                        <div class="card__body">
+                            <canvas id="velocityChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Task Distribution</h3>
+                        </div>
+                        <div class="card__body">
+                            <canvas id="distributionChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Team Performance</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="team-performance" id="teamPerformance"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Add Task</h3>
+                <button class="modal-close" id="closeTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assignee</label>
+                        <select class="form-control" id="taskAssignee" required>
+                            <option value="">Select assignee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Story Points</label>
+                        <select class="form-control" id="taskStoryPoints">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="5">5</option>
+                            <option value="8">8</option>
+                            <option value="13">13</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-control" id="taskPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-control" id="taskStatus">
+                            <option value="To Do">To Do</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--secondary" id="cancelTask">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Story Modal -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="storyModalTitle">Add User Story</h3>
+                <button class="modal-close" id="closeStoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="storyForm">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="storyTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="storyDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Story Points</label>
+                        <select class="form-control" id="storyStoryPoints">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="5">5</option>
+                            <option value="8">8</option>
+                            <option value="13">13</option>
+                            <option value="21">21</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-control" id="storyPriority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assignee</label>
+                        <select class="form-control" id="storyAssignee">
+                            <option value="">Select assignee</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Acceptance Criteria</label>
+                        <textarea class="form-control" id="storyAcceptanceCriteria" rows="3" placeholder="Enter each criterion on a new line"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--secondary" id="cancelStory">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Save Story</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
